@@ -1,5 +1,5 @@
 {
-  "name": "wot-guard",
+  "name": "@nostr-relay/wot-guard",
   "version": "0.0.1",
   "description": "wot",
   "keywords": [
