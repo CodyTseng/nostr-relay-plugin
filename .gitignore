@@ -1,0 +1,7 @@
+.DS_Store
+lerna-debug.log
+node_modules/
+dist/
+packages/*/dist/
+coverage/
+docs/
