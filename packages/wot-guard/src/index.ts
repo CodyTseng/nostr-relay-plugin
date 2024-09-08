@@ -93,6 +93,10 @@ export class WotGuard implements HandleMessagePlugin {
     this.trustDepth = Math.min(depth, 2);
   }
 
+  setAgent(agent: Agent): void {
+    this.agent = agent;
+  }
+
   getLastRefreshedAt(): number {
     return this.lastRefreshedAt;
   }
