@@ -37,6 +37,7 @@ export class WotGuard implements HandleMessagePlugin {
   private skipFilters: Filter[];
   private intervalId: NodeJS.Timeout | null = null;
   private trustedPubkeySet = new Set<string>();
+  private lastRefreshedAt = 0;
 
   constructor({
     trustAnchorPubkey,
@@ -60,14 +61,39 @@ export class WotGuard implements HandleMessagePlugin {
 
   async init(): Promise<void> {
     await this.refreshTrustedPubkeySet();
+    this.setRefreshInterval(this.refreshInterval);
+  }
+
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
+  setRefreshInterval(interval: number): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+    this.refreshInterval = interval;
     this.intervalId = setInterval(
       () => this.refreshTrustedPubkeySet(),
       this.refreshInterval,
     );
   }
 
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled;
+  setTrustAnchorPubkey(pubkey: Pubkey): void {
+    this.trustAnchorPubkey = pubkey;
+  }
+
+  setTrustDepth(depth: number): void {
+    this.trustDepth = Math.min(depth, 2);
+  }
+
+  getLastRefreshedAt(): number {
+    return this.lastRefreshedAt;
+  }
+
+  getTrustedPubkeyCount(): number {
+    return this.trustedPubkeySet.size;
   }
 
   checkPubkey(pubkey: Pubkey): boolean {
@@ -115,7 +141,7 @@ export class WotGuard implements HandleMessagePlugin {
     };
   }
 
-  private async refreshTrustedPubkeySet(): Promise<void> {
+  async refreshTrustedPubkeySet(): Promise<void> {
     if (!this.enabled) {
       return;
     }
@@ -157,6 +183,7 @@ export class WotGuard implements HandleMessagePlugin {
     this.logger.info(
       `Trusted pubkey set updated: ${newTrustedPubkeySet.size} pubkeys, took ${Date.now() - start}ms`,
     );
+    this.lastRefreshedAt = Date.now();
   }
 
   private async fetchNextDepthPubkeySet(
