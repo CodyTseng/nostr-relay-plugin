@@ -36,13 +36,13 @@
   },
   "devDependencies": {
     "@nostr-relay/common": "^0.0.29",
-    "@types/ws": "^8.5.12",
-    "rxjs": "^7.8.1"
+    "@types/ws": "^8.5.12"
   },
   "peerDependencies": {
     "@nostr-relay/common": ">=0.0.24"
   },
   "dependencies": {
+    "rxjs": "^7.8.1",
     "ws": "^8.18.0"
   }
 }
