@@ -70,6 +70,10 @@ export class WotGuard implements HandleMessagePlugin {
     this.enabled = enabled;
   }
 
+  checkPubkey(pubkey: Pubkey): boolean {
+    return this.trustedPubkeySet.has(pubkey);
+  }
+
   destroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
