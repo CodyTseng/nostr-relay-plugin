@@ -1,10 +1,21 @@
-import { Filter, Event } from '@nostr-relay/common';
+import { Event, Filter } from '@nostr-relay/common';
+import { Agent } from 'http';
 import { Relay } from './relay';
+
+type PoolOptions = {
+  agent?: Agent;
+};
 
 export class Pool {
   private relays: Relay[] = [];
+  private agent?: Agent;
 
-  constructor(private urls: string[]) {}
+  constructor(
+    private urls: string[],
+    { agent }: PoolOptions = {},
+  ) {
+    this.agent = agent;
+  }
 
   async init(): Promise<string[]> {
     if (this.relays.length) {
@@ -14,7 +25,7 @@ export class Pool {
 
     await Promise.allSettled(
       this.urls.map(async url => {
-        const relay = new Relay(url);
+        const relay = new Relay(url, { agent: this.agent });
         await relay.init();
         this.relays.push(relay);
       }),

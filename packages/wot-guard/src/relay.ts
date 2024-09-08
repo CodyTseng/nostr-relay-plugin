@@ -1,6 +1,11 @@
 import { Event, EventUtils, Filter } from '@nostr-relay/common';
 import { randomUUID } from 'crypto';
+import { Agent } from 'http';
 import { WebSocket } from 'ws';
+
+type RelayOptions = {
+  agent?: Agent;
+};
 
 export class Relay {
   url: string;
@@ -13,9 +18,11 @@ export class Relay {
       eoseCb: () => void;
     }
   >();
+  private agent?: Agent;
 
-  constructor(url: string) {
+  constructor(url: string, { agent }: RelayOptions = {}) {
     this.url = url;
+    this.agent = agent;
   }
 
   async init(): Promise<void> {
@@ -25,6 +32,7 @@ export class Relay {
 
     const client = new WebSocket(this.url, {
       timeout: 3000,
+      agent: this.agent,
     });
     await new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {

@@ -12,6 +12,7 @@ import {
   MessageType,
   Pubkey,
 } from '@nostr-relay/common';
+import { Agent } from 'http';
 import { Observable } from 'rxjs';
 import { Pool } from './pool';
 
@@ -24,6 +25,7 @@ export type WotGuardOptions = {
   eventRepository?: EventRepository;
   relayUrls?: string[];
   skipFilters?: Filter[];
+  agent?: Agent;
 };
 
 export class WotGuard implements HandleMessagePlugin {
@@ -38,6 +40,7 @@ export class WotGuard implements HandleMessagePlugin {
   private intervalId: NodeJS.Timeout | null = null;
   private trustedPubkeySet = new Set<string>();
   private lastRefreshedAt = 0;
+  private agent?: Agent;
 
   constructor({
     trustAnchorPubkey,
@@ -48,6 +51,7 @@ export class WotGuard implements HandleMessagePlugin {
     eventRepository,
     relayUrls,
     skipFilters,
+    agent,
   }: WotGuardOptions) {
     this.trustAnchorPubkey = trustAnchorPubkey;
     this.trustDepth = Math.min(trustDepth, 2); // maximum trust depth is 2 now
@@ -57,6 +61,7 @@ export class WotGuard implements HandleMessagePlugin {
     this.relayUrls = relayUrls ?? [];
     this.skipFilters = skipFilters ?? [];
     this.refreshInterval = refreshInterval ?? 60 * 60 * 1000; // 1 hour by default
+    this.agent = agent;
   }
 
   async init(): Promise<void> {
@@ -155,7 +160,7 @@ export class WotGuard implements HandleMessagePlugin {
     let currentDepthPubkeySet = newTrustedPubkeySet;
 
     // Initialize the pool of relays
-    const pool = new Pool(this.relayUrls);
+    const pool = new Pool(this.relayUrls, { agent: this.agent });
     const connectedRelayUrls = await pool.init();
     this.logger.info(`Connected to relays: ${connectedRelayUrls.join(', ')}`);
 
