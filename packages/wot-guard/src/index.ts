@@ -18,6 +18,7 @@ import { Pool } from './pool';
 export type WotGuardOptions = {
   trustAnchorPubkey: Pubkey;
   trustDepth: number;
+  enabled?: boolean;
   refreshInterval?: number;
   logger?: Logger;
   eventRepository?: EventRepository;
@@ -28,6 +29,7 @@ export type WotGuardOptions = {
 export class WotGuard implements HandleMessagePlugin {
   private readonly logger: Logger;
   private readonly eventRepository?: EventRepository;
+  private enabled: boolean;
   private trustAnchorPubkey: Pubkey;
   private trustDepth: number;
   private refreshInterval: number;
@@ -39,6 +41,7 @@ export class WotGuard implements HandleMessagePlugin {
   constructor({
     trustAnchorPubkey,
     trustDepth,
+    enabled,
     refreshInterval,
     logger,
     eventRepository,
@@ -47,6 +50,7 @@ export class WotGuard implements HandleMessagePlugin {
   }: WotGuardOptions) {
     this.trustAnchorPubkey = trustAnchorPubkey;
     this.trustDepth = Math.min(trustDepth, 2); // maximum trust depth is 2 now
+    this.enabled = enabled ?? true;
     this.logger = logger ?? new ConsoleLoggerService();
     this.eventRepository = eventRepository;
     this.relayUrls = relayUrls ?? [];
@@ -62,6 +66,10 @@ export class WotGuard implements HandleMessagePlugin {
     );
   }
 
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   destroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -75,6 +83,10 @@ export class WotGuard implements HandleMessagePlugin {
     message: IncomingMessage,
     next: () => Promise<HandleMessageResult>,
   ): Promise<HandleMessageResult> {
+    if (!this.enabled) {
+      return next();
+    }
+
     // Only check EVENT messages
     if (message[0] !== MessageType.EVENT) {
       return next();
@@ -100,6 +112,10 @@ export class WotGuard implements HandleMessagePlugin {
   }
 
   private async refreshTrustedPubkeySet(): Promise<void> {
+    if (!this.enabled) {
+      return;
+    }
+
     const start = Date.now();
     this.logger.info('Refreshing trusted pubkey set...');
     // Initialize a set to store pubkeys within the specified trust depth
