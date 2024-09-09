@@ -1,6 +1,6 @@
 # WoT Guard
 
-> A Web of Things (WoT) security guard plugin for [nostr-relay](https://github.com/CodyTseng/nostr-relay)
+> A Web of Trust (WoT) security guard plugin for [nostr-relay](https://github.com/CodyTseng/nostr-relay)
 
 ## Usage
 
