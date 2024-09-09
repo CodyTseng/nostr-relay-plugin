@@ -1,15 +1,13 @@
 import {
+  BeforeHandleEventPlugin,
+  BeforeHandleEventResult,
   ClientContext,
   ConsoleLoggerService,
   Event,
   EventRepository,
   EventUtils,
   Filter,
-  HandleMessagePlugin,
-  HandleMessageResult,
-  IncomingMessage,
   Logger,
-  MessageType,
   Pubkey,
 } from '@nostr-relay/common';
 import { Agent } from 'http';
@@ -28,7 +26,7 @@ export type WotGuardOptions = {
   agent?: Agent;
 };
 
-export class WotGuard implements HandleMessagePlugin {
+export class WotGuard implements BeforeHandleEventPlugin {
   private readonly logger: Logger;
   private readonly eventRepository?: EventRepository;
   private enabled: boolean;
@@ -117,36 +115,19 @@ export class WotGuard implements HandleMessagePlugin {
     this.trustedPubkeySet.clear();
   }
 
-  async handleMessage(
-    ctx: ClientContext,
-    message: IncomingMessage,
-    next: () => Promise<HandleMessageResult>,
-  ): Promise<HandleMessageResult> {
-    if (!this.enabled) {
-      return next();
-    }
-
-    // Only check EVENT messages
-    if (message[0] !== MessageType.EVENT) {
-      return next();
-    }
-
-    const event = message[1];
+  beforeHandleEvent(_: ClientContext, event: Event): BeforeHandleEventResult {
     if (
       this.skipFilters.some(filter =>
         EventUtils.isMatchingFilter(event, filter),
       ) ||
       this.trustedPubkeySet.has(event.pubkey)
     ) {
-      return next();
+      return { canHandle: true };
     }
 
-    const msg = 'block: you are not in the trusted public keys list';
-    ctx.sendMessage([MessageType.OK, event.id, false, msg]);
     return {
-      messageType: MessageType.EVENT,
-      success: false,
-      message: msg,
+      canHandle: false,
+      message: 'block: you are not in the trusted public keys list',
     };
   }
 
@@ -166,7 +147,9 @@ export class WotGuard implements HandleMessagePlugin {
     // Initialize the pool of relays
     const pool = new Pool(this.relayUrls, { agent: this.agent });
     const connectedRelayUrls = await pool.init();
-    this.logger.info(`Connected to relays: ${connectedRelayUrls.join(', ')}`);
+    this.logger.info(
+      `Connected to relays: ${connectedRelayUrls.length ? connectedRelayUrls.join(', ') : 'none'}`,
+    );
 
     // Iterate through each level of depth up to the specified trust depth
     for (let depth = 0; depth < this.trustDepth; depth++) {

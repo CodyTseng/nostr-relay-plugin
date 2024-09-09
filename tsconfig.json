@@ -14,9 +14,7 @@
     "allowJs": false,
     "outDir": "dist",
     "baseUrl": ".",
-    "declaration": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "declaration": true
   },
   "include": ["packages/**/*", "integration/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

@@ -35,14 +35,13 @@
     "url": "https://github.com/CodyTseng/nostr-relay-plugin/issues"
   },
   "devDependencies": {
-    "@nostr-relay/common": "^0.0.29",
+    "@nostr-relay/common": "^0.0.31",
     "@types/ws": "^8.5.12"
   },
   "peerDependencies": {
-    "@nostr-relay/common": ">=0.0.24"
+    "@nostr-relay/common": ">=0.0.30"
   },
   "dependencies": {
-    "rxjs": "^7.8.1",
     "ws": "^8.18.0"
   }
 }

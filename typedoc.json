@@ -1,6 +1,0 @@
-{
-  "entryPoints": ["packages/*"],
-  "name": "nostr-relay-plugin",
-  "entryPointStrategy": "packages",
-  "includeVersion": false
-}
