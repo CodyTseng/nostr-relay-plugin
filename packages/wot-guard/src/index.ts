@@ -1,7 +1,6 @@
 import {
   BeforeHandleEventPlugin,
   BeforeHandleEventResult,
-  ClientContext,
   ConsoleLoggerService,
   Event,
   EventRepository,
@@ -115,7 +114,7 @@ export class WotGuard implements BeforeHandleEventPlugin {
     this.trustedPubkeySet.clear();
   }
 
-  beforeHandleEvent(_: ClientContext, event: Event): BeforeHandleEventResult {
+  beforeHandleEvent(event: Event): BeforeHandleEventResult {
     if (
       this.skipFilters.some(filter =>
         EventUtils.isMatchingFilter(event, filter),
