@@ -14,10 +14,9 @@ import { Observable } from 'rxjs';
 import { Pool } from './pool';
 
 export type WotGuardOptions = {
-  trustAnchorPubkey: Pubkey;
-  trustDepth: number;
   enabled?: boolean;
-  refreshInterval?: number;
+  trustAnchorPubkey?: Pubkey;
+  trustDepth?: number;
   logger?: Logger;
   eventRepository?: EventRepository;
   relayUrls?: string[];
@@ -29,9 +28,8 @@ export class WotGuard implements BeforeHandleEventPlugin {
   private readonly logger: Logger;
   private readonly eventRepository?: EventRepository;
   private enabled: boolean;
-  private trustAnchorPubkey: Pubkey;
+  private trustAnchorPubkey?: Pubkey;
   private trustDepth: number;
-  private refreshInterval: number;
   private relayUrls: string[];
   private skipFilters: Filter[];
   private intervalId: NodeJS.Timeout | null = null;
@@ -43,43 +41,39 @@ export class WotGuard implements BeforeHandleEventPlugin {
     trustAnchorPubkey,
     trustDepth,
     enabled,
-    refreshInterval,
     logger,
     eventRepository,
     relayUrls,
     skipFilters,
     agent,
   }: WotGuardOptions) {
-    this.trustAnchorPubkey = trustAnchorPubkey;
-    this.trustDepth = Math.min(trustDepth, 2); // maximum trust depth is 2 now
     this.enabled = enabled ?? true;
+    if (this.enabled && !trustAnchorPubkey) {
+      throw new Error('trustAnchorPubkey is required to enable WotGuard');
+    }
+
+    this.trustAnchorPubkey = trustAnchorPubkey;
+    this.trustDepth = trustDepth ? Math.min(trustDepth, 2) : 1; // maximum trust depth is 2 now
     this.logger = logger ?? new ConsoleLoggerService();
     this.eventRepository = eventRepository;
     this.relayUrls = relayUrls ?? [];
     this.skipFilters = skipFilters ?? [];
-    this.refreshInterval = refreshInterval ?? 60 * 60 * 1000; // 1 hour by default
     this.agent = agent;
   }
 
   async init(): Promise<void> {
     await this.refreshTrustedPubkeySet();
-    this.setRefreshInterval(this.refreshInterval);
   }
 
   setEnabled(enabled: boolean): void {
+    if (!this.trustAnchorPubkey) {
+      throw new Error('trustAnchorPubkey is required to enable WotGuard');
+    }
     this.enabled = enabled;
   }
 
-  setRefreshInterval(interval: number): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-    this.refreshInterval = interval;
-    this.intervalId = setInterval(
-      () => this.refreshTrustedPubkeySet(),
-      this.refreshInterval,
-    );
+  getEnabled(): boolean {
+    return this.enabled;
   }
 
   setTrustAnchorPubkey(pubkey: Pubkey): void {
@@ -131,7 +125,7 @@ export class WotGuard implements BeforeHandleEventPlugin {
   }
 
   async refreshTrustedPubkeySet(): Promise<void> {
-    if (!this.enabled) {
+    if (!this.enabled || !this.trustAnchorPubkey) {
       return;
     }
 
