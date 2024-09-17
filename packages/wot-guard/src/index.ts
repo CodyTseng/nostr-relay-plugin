@@ -110,6 +110,7 @@ export class WotGuard implements BeforeHandleEventPlugin {
 
   beforeHandleEvent(event: Event): BeforeHandleEventResult {
     if (
+      !this.enabled ||
       this.skipFilters.some(filter =>
         EventUtils.isMatchingFilter(event, filter),
       ) ||
