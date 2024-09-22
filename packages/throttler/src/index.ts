@@ -23,10 +23,11 @@ export type ThrottlerConfig = {
 
 export class Throttler implements HandleMessagePlugin {
   private readonly storage = new Map<string, StorageOptions>();
-  private readonly config: Record<MessageType, ThrottlerConfig | undefined>;
   private intervalId: NodeJS.Timeout;
 
-  constructor() {
+  constructor(
+    private readonly config: Record<MessageType, ThrottlerConfig | undefined>,
+  ) {
     this.intervalId = setInterval(
       () => {
         const now = Date.now();
