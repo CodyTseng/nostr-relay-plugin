@@ -1,6 +1,6 @@
 {
   "name": "@nostr-relay/or-guard",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "or guard",
   "author": "codytseng <codytseng98@gmail.com>",
   "homepage": "https://github.com/CodyTseng/nostr-relay-plugin#readme",

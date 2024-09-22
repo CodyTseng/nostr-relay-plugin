@@ -1,6 +1,6 @@
 {
   "name": "@nostr-relay/pubkey-pow-guard",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "pubkey pow guard",
   "keywords": [
     "pow"
