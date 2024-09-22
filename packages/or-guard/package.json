@@ -1,0 +1,36 @@
+{
+  "name": "@nostr-relay/or-guard",
+  "version": "0.0.1",
+  "description": "or guard",
+  "author": "codytseng <codytseng98@gmail.com>",
+  "homepage": "https://github.com/CodyTseng/nostr-relay-plugin#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "dist": "dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodyTseng/nostr-relay-plugin.git"
+  },
+  "scripts": {
+    "build": "tsc -b -v",
+    "clean": "rm -rf dist"
+  },
+  "bugs": {
+    "url": "https://github.com/CodyTseng/nostr-relay-plugin/issues"
+  },
+  "devDependencies": {
+    "@nostr-relay/common": "^0.0.32"
+  },
+  "peerDependencies": {
+    "@nostr-relay/common": ">=0.0.32"
+  }
+}
