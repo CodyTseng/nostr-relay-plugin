@@ -1,6 +1,6 @@
 {
   "name": "@nostr-relay/throttler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "nostr relay throttler",
   "author": "codytseng <codytseng98@gmail.com>",
   "homepage": "https://github.com/CodyTseng/nostr-relay-plugin#readme",
