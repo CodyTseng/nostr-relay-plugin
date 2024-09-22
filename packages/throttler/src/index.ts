@@ -26,7 +26,12 @@ export class Throttler implements HandleMessagePlugin {
   private intervalId: NodeJS.Timeout;
 
   constructor(
-    private readonly config: Record<MessageType, ThrottlerConfig | undefined>,
+    private readonly config: {
+      [MessageType.EVENT]?: ThrottlerConfig;
+      [MessageType.REQ]?: ThrottlerConfig;
+      [MessageType.AUTH]?: ThrottlerConfig;
+      [MessageType.CLOSE]?: ThrottlerConfig;
+    },
   ) {
     this.intervalId = setInterval(
       () => {
