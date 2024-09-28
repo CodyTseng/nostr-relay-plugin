@@ -8,6 +8,7 @@
 - [PoW Guard](./packages/pow-guard): A Proof of Work (PoW) guard plugin.
 - [Pubkey PoW Guard](./packages/pubkey-pow-guard): A public key Proof of Work (PoW) guard plugin.
 - [Or Guard](./packages/or-guard): An OR operator guard plugin.
+- [CreatedAt Limit Guard](./packages/created-at-limit-guard): A created_at limit guard plugin.
 - [Throttler](./packages/throttler): A throttler plugin.
 
 More plugins are coming soon...
