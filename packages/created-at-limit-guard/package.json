@@ -1,6 +1,6 @@
 {
   "name": "@nostr-relay/created-at-limit-guard",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "created_at limit guard",
   "author": "codytseng <codytseng98@gmail.com>",
   "homepage": "https://github.com/CodyTseng/nostr-relay-plugin#readme",
