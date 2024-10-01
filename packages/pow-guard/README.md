@@ -23,6 +23,16 @@ const powGuard = new PowGuard(8); // 8 is the minimum difficulty
 relay.register(powGuard);
 ```
 
+### API
+
+#### `getMinPowDifficulty()`
+
+Get the minimum difficulty of the PoW guard.
+
+#### `setMinPowDifficulty(difficulty: number)`
+
+Set the minimum difficulty of the PoW guard.
+
 ## Donate
 
 If you like this project, you can buy me a coffee :) ⚡️ codytseng@getalby.com ⚡️
