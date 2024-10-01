@@ -15,7 +15,15 @@ export class PubkeyPowGuard implements BeforeHandleEventPlugin {
     this.difficulty = difficulty;
   }
 
+  getDifficulty() {
+    return this.difficulty;
+  }
+
   beforeHandleEvent(event: Event): BeforeHandleEventResult {
+    if (this.difficulty <= 0) {
+      return { canHandle: true };
+    }
+
     const difficulty = countPowDifficulty(event.pubkey);
     if (difficulty < this.difficulty) {
       return {
