@@ -14,6 +14,17 @@ describe('CreatedAtLimitGuard', () => {
     expect(guard).toBeDefined();
   });
 
+  it('should set options correctly', () => {
+    guard.setOptions({
+      upperLimit: 30,
+      lowerLimit: 30,
+    });
+    expect(guard['options']).toEqual({
+      upperLimit: 30,
+      lowerLimit: 30,
+    });
+  });
+
   it('should return canHandle: true when created_at is within the limits', () => {
     const event = {
       created_at: now(),

@@ -10,7 +10,11 @@ export type CreatedAtLimitGuardOptions = {
 };
 
 export class CreatedAtLimitGuard implements BeforeHandleEventPlugin {
-  constructor(private readonly options: CreatedAtLimitGuardOptions = {}) {}
+  constructor(private options: CreatedAtLimitGuardOptions = {}) {}
+
+  setOptions(options: CreatedAtLimitGuardOptions): void {
+    this.options = options;
+  }
 
   beforeHandleEvent(event: Event): BeforeHandleEventResult {
     const now = Math.floor(Date.now() / 1000);
