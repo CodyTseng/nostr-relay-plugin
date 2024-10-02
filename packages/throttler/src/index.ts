@@ -21,18 +21,26 @@ export type ThrottlerConfig = {
   blockDuration: number;
 };
 
+export type ThrottlerOptions = {
+  [MessageType.EVENT]?: ThrottlerConfig;
+  [MessageType.REQ]?: ThrottlerConfig;
+  [MessageType.AUTH]?: ThrottlerConfig;
+  [MessageType.CLOSE]?: ThrottlerConfig;
+};
+
+export type KeyGenerator = (
+  ctx: ClientContext,
+  message: IncomingMessage,
+) => string;
+
 export class Throttler implements HandleMessagePlugin {
   private readonly storage = new Map<string, StorageOptions>();
   private intervalId: NodeJS.Timeout;
+  private keyGenerator: KeyGenerator = (ctx, message) => {
+    return `${ctx.ip}:${message[0]}`;
+  };
 
-  constructor(
-    private readonly config: {
-      [MessageType.EVENT]?: ThrottlerConfig;
-      [MessageType.REQ]?: ThrottlerConfig;
-      [MessageType.AUTH]?: ThrottlerConfig;
-      [MessageType.CLOSE]?: ThrottlerConfig;
-    },
-  ) {
+  constructor(private config: ThrottlerOptions) {
     this.intervalId = setInterval(
       () => {
         const now = Date.now();
@@ -49,19 +57,26 @@ export class Throttler implements HandleMessagePlugin {
     );
   }
 
+  setKeyGenerator(keyGenerator: KeyGenerator): void {
+    this.keyGenerator = keyGenerator;
+  }
+
+  setConfig(config: ThrottlerOptions): void {
+    this.config = config;
+  }
+
   async handleMessage(
     ctx: ClientContext,
     message: IncomingMessage,
     next: () => Promise<HandleMessageResult>,
   ): Promise<HandleMessageResult> {
-    const ip = ctx.ip;
     const messageType = message[0];
     const config = this.config[messageType];
     if (!config) {
       return next();
     }
 
-    const key = `${ip}:${messageType}`;
+    const key = this.keyGenerator(ctx, message);
     const storage = this.increase(
       key,
       config.ttl,
